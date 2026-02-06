@@ -1,43 +1,43 @@
-﻿# DataWeaver
+# DataWeaver
 
-DataWeaver is a SaaS-style **Macro Builder** that lets non-technical users automate Excel workflows without VBA. Users define rules in a visual UI; the platform executes those rules and delivers processed Excel outputs with full auditability.
+DataWeaver es un **Macro Builder** estilo SaaS que permite a usuarios no técnicos automatizar flujos de Excel sin VBA. Los usuarios definen reglas en una UI visual; la plataforma ejecuta esas reglas y entrega salidas de Excel procesadas con auditoría completa.
 
-## Why It Exists
-- Excel automation depends on a single person who “knows macros”.
-- Workflows are fragile, undocumented, and hard to change.
-- Small changes require reprogramming and create operational risk.
+## Por qué existe
+- La automatización en Excel depende de una sola persona que “sabe macros”.
+- Los flujos son frágiles, sin documentación y difíciles de cambiar.
+- Cambios pequeños requieren reprogramar y generan riesgo operativo.
 
-DataWeaver converts **business rules** into **reproducible automations**.
+DataWeaver convierte **reglas de negocio** en **automatizaciones reproducibles**.
 
-## Core Idea
-Separate the system into three layers:
+## Idea central
+Separa el sistema en tres capas:
 
-1. **Rules (what to do)** — defined by users in the UI
-2. **Engine (how to do it)** — internal logic that executes steps
-3. **Executor** — runs the engine and produces Excel outputs
+1. **Reglas (qué hacer)** — definidas por usuarios en la UI
+2. **Motor (cómo hacerlo)** — lógica interna que ejecuta pasos
+3. **Ejecutor** — corre el motor y produce salidas en Excel
 
-This separation makes the system scalable, testable, and reusable across desktop or web.
+Esta separación hace el sistema escalable, testeable y reutilizable en desktop o web.
 
-## MVP Feature Set
-- Upload `.xlsx`
-- Visual Rule Builder (no code)
-- Rule validation + inline errors
-- Preview (before/after sample rows)
-- Execute workflow (async)
-- Download output
-- Save workflows with versioning
-- Execution logs and audit trail
+## Alcance MVP
+- Carga de `.xlsx`
+- Rule Builder visual (sin código)
+- Validación de reglas + errores inline
+- Preview (filas de muestra antes/después)
+- Ejecutar flujo (async)
+- Descargar resultado
+- Guardar workflows con versionado
+- Logs de ejecución y auditoría
 
-## Rule Types (MVP)
-- **Row rules**: equals, not equals, greater/less than, empty
-- **Actions**: move row, copy row, delete row, color/mark
-- **Transformations**: group by, sum/count/avg
-- **Output**: new sheet, summary sheet
+## Tipos de reglas (MVP)
+- **Reglas de fila**: igual, distinto, mayor/menor, vacío
+- **Acciones**: mover fila, copiar fila, eliminar fila, marcar/color
+- **Transformaciones**: agrupar por, sumar/contar/promedio
+- **Salida**: nueva hoja, hoja de resumen
 
-## Rule Engine (Concept)
-The engine takes a DataFrame and a JSON workflow, and returns outputs + logs.
+## Motor de reglas (concepto)
+El motor recibe un DataFrame y un workflow JSON, y devuelve salidas + logs.
 
-Example:
+Ejemplo:
 
 ```json
 {
@@ -62,21 +62,21 @@ Example:
 }
 ```
 
-## Architecture (Target)
+## Arquitectura (objetivo)
 
 ```text
-React UI
+UI React
   ↓
 FastAPI
   ↓
-Rule Engine (Python + pandas)
+Motor de reglas (Python + pandas)
   ↓
-Celery Worker (async jobs)
+Celery Worker (jobs async)
   ↓
-Excel Output
+Salida Excel
 ```
 
-## API Surface (MVP)
+## Superficie de API (MVP)
 - `POST /auth/login`
 - `POST /files/upload`
 - `GET /files/{id}/download`
@@ -89,16 +89,16 @@ Excel Output
 - `GET /executions/{id}/logs`
 - `GET /executions/{id}/output`
 
-## Data Model (Multi‑Tenant)
-Key entities:
+## Modelo de datos (multi‑tenant)
+Entidades clave:
 - `companies` (tenants)
 - `users`
-- `memberships` (user ↔ company with role)
+- `memberships` (user ↔ company con rol)
 - `workflows` + `workflow_versions`
 - `executions` + `execution_logs`
 - `files`
 
-All core tables include `company_id` to enforce isolation.
+Todas las tablas core incluyen `company_id` para forzar aislamiento.
 
 ### ERD (Mermaid)
 ```mermaid
@@ -192,36 +192,36 @@ erDiagram
 ```
 
 ## Roles (MVP)
-- **Owner**: everything + billing
-- **Admin**: manage users + workflows
-- **Editor**: create/edit workflows
-- **Runner**: execute workflows
-- **Viewer**: read‑only + logs
+- **Owner**: todo + billing
+- **Admin**: gestiona usuarios + workflows
+- **Editor**: crea/edita workflows
+- **Runner**: ejecuta workflows
+- **Viewer**: solo lectura + logs
 
-## Security Principles
-- Tenant isolation by `company_id`
-- JWT with `company_id` and role
-- Short‑lived file storage with expiration
-- No VBA or macros executed
+## Principios de seguridad
+- Aislamiento de tenant por `company_id`
+- JWT con `company_id` y rol
+- Almacenamiento de archivos con expiración corta
+- No se ejecuta VBA ni macros
 
 ## Roadmap
 **v1**
-- Filters, moves, group sums
-- Workflow versioning
-- Async executions
+- Filtros, movimientos, agrupaciones y sumas
+- Versionado de workflows
+- Ejecuciones async
 
 **v2**
-- Multi‑file workflows
-- Scheduling
-- Roles + permissions UI
+- Flujos multi‑archivo
+- Programación
+- UI de roles + permisos
 
 **v3**
-- ERP integrations
-- Public API
-- Enterprise audit exports
+- Integraciones ERP
+- API pública
+- Exportaciones de auditoría empresariales
 
-## Rule JSON Schema (MVP)
-Use this for server‑side validation of workflows before execution.
+## JSON Schema de reglas (MVP)
+Usa esto para validación en servidor antes de ejecutar.
 
 ```json
 {
@@ -260,4 +260,4 @@ Use this for server‑side validation of workflows before execution.
 
 ---
 
-If you want the full schema, OpenAPI spec, and rule JSON Schema, see the product design notes in this repository.
+Si quieres el esquema completo, la especificación OpenAPI y otros artefactos, revisa las notas de diseño del producto en este repositorio.
