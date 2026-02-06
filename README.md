@@ -9,6 +9,8 @@ Transform repetitive Excel tasks into automated workflows without writing VBA co
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1.svg?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![Celery](https://img.shields.io/badge/Celery-5.3-37814A.svg?style=flat&logo=celery)](https://docs.celeryq.dev)
 
+**English** | [Español](README.es.md)
+
 ## 🎯 Problem Statement
 
 Organizations face critical challenges with Excel automation:
