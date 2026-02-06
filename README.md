@@ -100,6 +100,97 @@ Key entities:
 
 All core tables include `company_id` to enforce isolation.
 
+### ERD (Mermaid)
+```mermaid
+erDiagram
+    COMPANIES ||--o{ WORKFLOWS : owns
+    COMPANIES ||--o{ FILES : owns
+    COMPANIES ||--o{ EXECUTIONS : owns
+    USERS ||--o{ MEMBERSHIPS : has
+    ROLES ||--o{ MEMBERSHIPS : assigned
+    USERS ||--o{ WORKFLOW_VERSIONS : created
+    WORKFLOWS ||--o{ WORKFLOW_VERSIONS : versions
+    WORKFLOW_VERSIONS ||--o{ EXECUTIONS : runs
+    EXECUTIONS ||--o{ EXECUTION_LOGS : logs
+    EXECUTIONS ||--o{ EXECUTION_FILES : outputs
+    FILES ||--o{ EXECUTION_FILES : used_in
+
+    COMPANIES {
+      UUID id PK
+      TEXT name
+      TEXT plan
+      TIMESTAMP created_at
+    }
+    USERS {
+      UUID id PK
+      TEXT email
+      TEXT password_hash
+      BOOLEAN is_active
+      TIMESTAMP created_at
+    }
+    ROLES {
+      UUID id PK
+      TEXT name
+    }
+    MEMBERSHIPS {
+      UUID id PK
+      UUID user_id FK
+      UUID company_id FK
+      UUID role_id FK
+      TIMESTAMP created_at
+    }
+    WORKFLOWS {
+      UUID id PK
+      UUID company_id FK
+      TEXT name
+      TEXT description
+      BOOLEAN is_active
+      TIMESTAMP created_at
+      TIMESTAMP updated_at
+    }
+    WORKFLOW_VERSIONS {
+      UUID id PK
+      UUID workflow_id FK
+      INT version_number
+      JSONB rules_json
+      UUID created_by FK
+      TIMESTAMP created_at
+    }
+    FILES {
+      UUID id PK
+      UUID company_id FK
+      UUID user_id FK
+      TEXT original_filename
+      TEXT storage_path
+      TEXT file_type
+      TIMESTAMP created_at
+      TIMESTAMP expires_at
+    }
+    EXECUTIONS {
+      UUID id PK
+      UUID company_id FK
+      UUID workflow_version_id FK
+      TEXT status
+      TIMESTAMP started_at
+      TIMESTAMP finished_at
+      TEXT error_message
+    }
+    EXECUTION_LOGS {
+      UUID id PK
+      UUID execution_id FK
+      INT step_index
+      TEXT step_type
+      TEXT message
+      INT affected_rows
+      TIMESTAMP created_at
+    }
+    EXECUTION_FILES {
+      UUID execution_id FK
+      UUID file_id FK
+      TEXT role
+    }
+```
+
 ## Roles (MVP)
 - **Owner**: everything + billing
 - **Admin**: manage users + workflows
@@ -128,6 +219,44 @@ All core tables include `company_id` to enforce isolation.
 - ERP integrations
 - Public API
 - Enterprise audit exports
+
+## Rule JSON Schema (MVP)
+Use this for server‑side validation of workflows before execution.
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkflowRules",
+  "type": "object",
+  "required": ["steps"],
+  "properties": {
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "enum": ["filter", "move", "group_sum", "format"] },
+          "column": { "type": "string" },
+          "operator": { "type": "string", "enum": ["=", "!=", ">", "<", ">=", "<="] },
+          "value": {},
+          "target_sheet": { "type": "string" },
+          "group_by": { "type": "string" },
+          "field": { "type": "string" },
+          "format": { "type": "string" }
+        },
+        "allOf": [
+          { "if": { "properties": { "type": { "const": "filter" } } }, "then": { "required": ["column", "operator", "value"] } },
+          { "if": { "properties": { "type": { "const": "move" } } }, "then": { "required": ["target_sheet"] } },
+          { "if": { "properties": { "type": { "const": "group_sum" } } }, "then": { "required": ["group_by", "field", "target_sheet"] } },
+          { "if": { "properties": { "type": { "const": "format" } } }, "then": { "required": ["column", "format"] } }
+        ]
+      }
+    }
+  }
+}
+```
 
 ---
 
