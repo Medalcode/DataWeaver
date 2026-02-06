@@ -1,263 +1,390 @@
-# DataWeaver
+# Macro Builder
 
-DataWeaver es un **Macro Builder** estilo SaaS que permite a usuarios no técnicos automatizar flujos de Excel sin VBA. Los usuarios definen reglas en una UI visual; la plataforma ejecuta esas reglas y entrega salidas de Excel procesadas con auditoría completa.
+> **Low-code Excel automation platform for business users**
 
-## Por qué existe
-- La automatización en Excel depende de una sola persona que “sabe macros”.
-- Los flujos son frágiles, sin documentación y difíciles de cambiar.
-- Cambios pequeños requieren reprogramar y generan riesgo operativo.
+Transform repetitive Excel tasks into automated workflows without writing VBA code. Define business rules visually and let the system handle the execution.
 
-DataWeaver convierte **reglas de negocio** en **automatizaciones reproducibles**.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?style=flat&logo=FastAPI)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python)](https://www.python.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1.svg?style=flat&logo=postgresql)](https://www.postgresql.org)
+[![Celery](https://img.shields.io/badge/Celery-5.3-37814A.svg?style=flat&logo=celery)](https://docs.celeryq.dev)
 
-## Idea central
-Separa el sistema en tres capas:
+## 🎯 Problem Statement
 
-1. **Reglas (qué hacer)** — definidas por usuarios en la UI
-2. **Motor (cómo hacerlo)** — lógica interna que ejecuta pasos
-3. **Ejecutor** — corre el motor y produce salidas en Excel
+Organizations face critical challenges with Excel automation:
 
-Esta separación hace el sistema escalable, testeable y reutilizable en desktop o web.
+- **Knowledge dependency**: Processes trapped in VBA macros known only to specific employees
+- **Maintenance nightmare**: Small changes require complete macro rewrites
+- **Business continuity risk**: When the "Excel person" leaves, automation stops
+- **No auditability**: Black-box macros with zero transparency
 
-## Alcance MVP
-- Carga de `.xlsx`
-- Rule Builder visual (sin código)
-- Validación de reglas + errores inline
-- Preview (filas de muestra antes/después)
-- Ejecutar flujo (async)
-- Descargar resultado
-- Guardar workflows con versionado
-- Logs de ejecución y auditoría
+## 💡 Solution
 
-## Tipos de reglas (MVP)
-- **Reglas de fila**: igual, distinto, mayor/menor, vacío
-- **Acciones**: mover fila, copiar fila, eliminar fila, marcar/color
-- **Transformaciones**: agrupar por, sumar/contar/promedio
-- **Salida**: nueva hoja, hoja de resumen
+Macro Builder converts business logic into **declarative, versionable workflows** that anyone can create and maintain.
 
-## Motor de reglas (concepto)
-El motor recibe un DataFrame y un workflow JSON, y devuelve salidas + logs.
+### Core Value Propositions
 
-Ejemplo:
+✅ **No coding required** - Visual rule builder with natural language descriptions  
+✅ **Full auditability** - Every execution logged with step-by-step details  
+✅ **Version control** - Track changes, rollback, and compare workflow versions  
+✅ **Multi-tenant** - Secure company isolation with role-based access  
+✅ **Scalable** - Async execution handles large files efficiently  
 
+## 🏗️ Architecture
+
+### System Design
+
+```
+┌─────────────┐
+│   React UI  │ (Rule Builder)
+└──────┬──────┘
+       │ HTTPS/REST
+┌──────┴──────────────────────────┐
+│       FastAPI Backend            │
+│  ┌────────────┐  ┌────────────┐ │
+│  │    Auth    │  │  Workflow  │ │
+│  │   (JWT)    │  │   Engine   │ │
+│  └────────────┘  └────────────┘ │
+└──────┬────────────────┬──────────┘
+       │                │
+┌──────┴──────┐  ┌──────┴──────┐
+│ PostgreSQL  │  │   Celery    │
+│  (Metadata) │  │  (Async)    │
+└─────────────┘  └──────┬──────┘
+                        │
+                 ┌──────┴──────┐
+                 │    Redis    │
+                 └─────────────┘
+```
+
+### Key Components
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **API Layer** | FastAPI | REST endpoints, validation, auth |
+| **Rule Engine** | Python + Pandas | Workflow execution logic |
+| **Task Queue** | Celery + Redis | Async job processing |
+| **Database** | PostgreSQL | Multi-tenant data persistence |
+| **Storage** | File system | Temporary Excel file storage |
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Python 3.11+ (for local development)
+
+### Run with Docker
+
+```bash
+# Clone repository
+git clone https://github.com/Medalcode/DataWeaver.git
+cd DataWeaver
+
+# Start all services
+docker-compose up -d
+
+# Check health
+curl http://localhost:8000/health
+
+# Access API docs
+open http://localhost:8000/docs
+```
+
+The API will be available at `http://localhost:8000`
+
+### Local Development
+
+```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set environment variables
+cp .env.example .env
+
+# Start PostgreSQL and Redis
+docker-compose up -d postgres redis
+
+# Run migrations
+alembic upgrade head
+
+# Start API server
+uvicorn app.main:app --reload
+
+# In another terminal, start Celery worker
+celery -A app.tasks.celery_app worker --loglevel=info
+```
+
+## 📖 API Usage
+
+### 1. Register User
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@company.com",
+    "password": "secure_password",
+    "company_name": "Acme Corp"
+  }'
+```
+
+### 2. Login
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -F "username=user@company.com" \
+  -F "password=secure_password"
+```
+
+Response:
 ```json
 {
-  "steps": [
-    {
-      "type": "filter",
-      "column": "Estado",
-      "operator": "=",
-      "value": "RECHAZADO"
-    },
-    {
-      "type": "move",
-      "target_sheet": "Errores"
-    },
-    {
-      "type": "group_sum",
-      "group_by": "Mes",
-      "field": "Monto",
-      "target_sheet": "Resumen"
-    }
-  ]
+  "access_token": "eyJ...",
+  "token_type": "bearer"
 }
 ```
 
-## Arquitectura (objetivo)
+### 3. Upload Excel File
 
-```text
-UI React
-  ↓
-FastAPI
-  ↓
-Motor de reglas (Python + pandas)
-  ↓
-Celery Worker (jobs async)
-  ↓
-Salida Excel
+```bash
+curl -X POST http://localhost:8000/api/v1/files/upload \
+  -H "Authorization: Bearer {token}" \
+  -F "file=@sales_data.xlsx"
 ```
 
-## Superficie de API (MVP)
-- `POST /auth/login`
-- `POST /files/upload`
-- `GET /files/{id}/download`
-- `POST /workflows`
-- `GET /workflows`
-- `POST /workflows/{id}/versions`
-- `POST /preview`
-- `POST /executions`
-- `GET /executions/{id}`
-- `GET /executions/{id}/logs`
-- `GET /executions/{id}/output`
-
-## Modelo de datos (multi‑tenant)
-Entidades clave:
-- `companies` (tenants)
-- `users`
-- `memberships` (user ↔ company con rol)
-- `workflows` + `workflow_versions`
-- `executions` + `execution_logs`
-- `files`
-
-Todas las tablas core incluyen `company_id` para forzar aislamiento.
-
-### ERD (Mermaid)
-```mermaid
-erDiagram
-    COMPANIES ||--o{ WORKFLOWS : owns
-    COMPANIES ||--o{ FILES : owns
-    COMPANIES ||--o{ EXECUTIONS : owns
-    USERS ||--o{ MEMBERSHIPS : has
-    ROLES ||--o{ MEMBERSHIPS : assigned
-    USERS ||--o{ WORKFLOW_VERSIONS : created
-    WORKFLOWS ||--o{ WORKFLOW_VERSIONS : versions
-    WORKFLOW_VERSIONS ||--o{ EXECUTIONS : runs
-    EXECUTIONS ||--o{ EXECUTION_LOGS : logs
-    EXECUTIONS ||--o{ EXECUTION_FILES : outputs
-    FILES ||--o{ EXECUTION_FILES : used_in
-
-    COMPANIES {
-      UUID id PK
-      TEXT name
-      TEXT plan
-      TIMESTAMP created_at
-    }
-    USERS {
-      UUID id PK
-      TEXT email
-      TEXT password_hash
-      BOOLEAN is_active
-      TIMESTAMP created_at
-    }
-    ROLES {
-      UUID id PK
-      TEXT name
-    }
-    MEMBERSHIPS {
-      UUID id PK
-      UUID user_id FK
-      UUID company_id FK
-      UUID role_id FK
-      TIMESTAMP created_at
-    }
-    WORKFLOWS {
-      UUID id PK
-      UUID company_id FK
-      TEXT name
-      TEXT description
-      BOOLEAN is_active
-      TIMESTAMP created_at
-      TIMESTAMP updated_at
-    }
-    WORKFLOW_VERSIONS {
-      UUID id PK
-      UUID workflow_id FK
-      INT version_number
-      JSONB rules_json
-      UUID created_by FK
-      TIMESTAMP created_at
-    }
-    FILES {
-      UUID id PK
-      UUID company_id FK
-      UUID user_id FK
-      TEXT original_filename
-      TEXT storage_path
-      TEXT file_type
-      TIMESTAMP created_at
-      TIMESTAMP expires_at
-    }
-    EXECUTIONS {
-      UUID id PK
-      UUID company_id FK
-      UUID workflow_version_id FK
-      TEXT status
-      TIMESTAMP started_at
-      TIMESTAMP finished_at
-      TEXT error_message
-    }
-    EXECUTION_LOGS {
-      UUID id PK
-      UUID execution_id FK
-      INT step_index
-      TEXT step_type
-      TEXT message
-      INT affected_rows
-      TIMESTAMP created_at
-    }
-    EXECUTION_FILES {
-      UUID execution_id FK
-      UUID file_id FK
-      TEXT role
-    }
-```
-
-## Roles (MVP)
-- **Owner**: todo + billing
-- **Admin**: gestiona usuarios + workflows
-- **Editor**: crea/edita workflows
-- **Runner**: ejecuta workflows
-- **Viewer**: solo lectura + logs
-
-## Principios de seguridad
-- Aislamiento de tenant por `company_id`
-- JWT con `company_id` y rol
-- Almacenamiento de archivos con expiración corta
-- No se ejecuta VBA ni macros
-
-## Roadmap
-**v1**
-- Filtros, movimientos, agrupaciones y sumas
-- Versionado de workflows
-- Ejecuciones async
-
-**v2**
-- Flujos multi‑archivo
-- Programación
-- UI de roles + permisos
-
-**v3**
-- Integraciones ERP
-- API pública
-- Exportaciones de auditoría empresariales
-
-## JSON Schema de reglas (MVP)
-Usa esto para validación en servidor antes de ejecutar.
-
+Response shows available columns:
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "WorkflowRules",
-  "type": "object",
-  "required": ["steps"],
-  "properties": {
-    "steps": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["type"],
-        "properties": {
-          "type": { "type": "string", "enum": ["filter", "move", "group_sum", "format"] },
-          "column": { "type": "string" },
-          "operator": { "type": "string", "enum": ["=", "!=", ">", "<", ">=", "<="] },
-          "value": {},
-          "target_sheet": { "type": "string" },
-          "group_by": { "type": "string" },
-          "field": { "type": "string" },
-          "format": { "type": "string" }
+  "file_id": "uuid",
+  "filename": "sales_data.xlsx",
+  "columns": ["Date", "Product", "Amount", "Status"]
+}
+```
+
+### 4. Create Workflow
+
+```bash
+curl -X POST http://localhost:8000/api/v1/workflows \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Monthly Sales Report",
+    "description": "Filter and aggregate sales data"
+  }'
+```
+
+### 5. Create Workflow Version (Define Rules)
+
+```bash
+curl -X POST http://localhost:8000/api/v1/workflows/{workflow_id}/versions \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rules": {
+      "steps": [
+        {
+          "type": "filter",
+          "column": "Status",
+          "operator": "=",
+          "value": "Approved"
         },
-        "allOf": [
-          { "if": { "properties": { "type": { "const": "filter" } } }, "then": { "required": ["column", "operator", "value"] } },
-          { "if": { "properties": { "type": { "const": "move" } } }, "then": { "required": ["target_sheet"] } },
-          { "if": { "properties": { "type": { "const": "group_sum" } } }, "then": { "required": ["group_by", "field", "target_sheet"] } },
-          { "if": { "properties": { "type": { "const": "format" } } }, "then": { "required": ["column", "format"] } }
-        ]
-      }
+        {
+          "type": "group_sum",
+          "group_by": "Product",
+          "field": "Amount",
+          "target_sheet": "Product_Summary"
+        }
+      ]
     }
-  }
-}
+  }'
 ```
+
+### 6. Execute Workflow
+
+```bash
+curl -X POST http://localhost:8000/api/v1/executions \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflow_version_id": "uuid",
+    "file_id": "uuid"
+  }'
+```
+
+### 7. Check Execution Status
+
+```bash
+curl -X GET http://localhost:8000/api/v1/executions/{execution_id} \
+  -H "Authorization: Bearer {token}"
+```
+
+### 8. Download Results
+
+```bash
+curl -X GET http://localhost:8000/api/v1/executions/{execution_id}/output \
+  -H "Authorization: Bearer {token}" \
+  --output result.xlsx
+```
+
+## 🎨 Available Rules
+
+| Rule Type | Description | Parameters |
+|-----------|-------------|------------|
+| `filter` | Filter rows by condition | `column`, `operator`, `value` |
+| `move` | Move rows to new sheet | `target_sheet` |
+| `group_sum` | Group and aggregate | `group_by`, `field`, `target_sheet` |
+
+### Supported Operators
+
+- `=` Equal
+- `!=` Not equal
+- `>` Greater than
+- `<` Less than
+- `>=` Greater or equal
+- `<=` Less or equal
+- `contains` Text contains
+
+## 🗄️ Database Schema
+
+### Multi-Tenant Architecture
+
+```sql
+companies
+├── users (via memberships)
+├── workflows
+│   └── workflow_versions
+│       └── executions
+│           ├── execution_logs
+│           └── execution_files
+└── files
+```
+
+**Key Design Decisions:**
+
+- ✅ Single database with `company_id` isolation
+- ✅ Explicit versioning for reproducibility
+- ✅ Audit trail via execution logs
+- ✅ Automatic file expiration
+
+## 🔐 Security Features
+
+- **JWT Authentication** - Secure token-based auth
+- **Tenant Isolation** - Strict `company_id` filtering
+- **Password Hashing** - Bcrypt with salt
+- **File Expiration** - Automatic cleanup after 24h
+- **Input Validation** - Pydantic schemas on all endpoints
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+pytest tests/
+
+# Run with coverage
+pytest --cov=app tests/
+
+# Test specific module
+pytest tests/test_engine.py -v
+```
+
+## 📦 Project Structure
+
+```
+dataweaver/
+├── backend/
+│   └── app/
+│       ├── engine/          # Rule execution engine
+│       │   ├── context.py   # Execution state
+│       │   ├── engine.py    # Main orchestrator
+│       │   ├── validator.py # Pre-execution validation
+│       │   └── rules/       # Rule implementations
+│       │       ├── base.py
+│       │       ├── filter.py
+│       │       ├── move.py
+│       │       ├── group_sum.py
+│       │       └── factory.py
+│       ├── routes/          # API endpoints
+│       │   ├── auth.py
+│       │   ├── workflows.py
+│       │   ├── files.py
+│       │   └── executions.py
+│       ├── tasks/           # Celery tasks
+│       │   └── workflow_execution.py
+│       ├── models.py        # SQLAlchemy models
+│       ├── schemas.py       # Pydantic schemas
+│       ├── database.py      # DB connection
+│       ├── auth.py          # Authentication logic
+│       ├── config.py        # Application settings
+│       └── main.py          # FastAPI app
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+## 🎯 Roadmap
+
+### MVP (Current)
+- [x] Core rule engine (Filter, Move, GroupSum)
+- [x] Multi-tenant architecture
+- [x] Async execution
+- [x] JWT authentication
+- [x] File upload/download
+- [x] Workflow versioning
+
+### v2 (Planned)
+- [ ] Additional rules (Sort, Transform, Validate)
+- [ ] Multi-file workflows
+- [ ] Scheduled executions
+- [ ] Email notifications
+- [ ] Execution history dashboard
+
+### v3 (Future)
+- [ ] React frontend (Rule Builder UI)
+- [ ] Workflow marketplace
+- [ ] API integrations (Google Sheets, Airtable)
+- [ ] Custom rule development SDK
+- [ ] Enterprise SSO
+
+## 💼 Use Cases
+
+### 1. Monthly Financial Reports
+**Problem**: Finance team manually consolidates sales data from 10 branches  
+**Solution**: Filter by date → Group by branch → Sum revenue → Export summary
+
+### 2. Customer Data Cleanup
+**Problem**: CRM exports contain duplicates and invalid emails  
+**Solution**: Filter nulls → Remove duplicates → Validate emails → Flag issues
+
+### 3. Inventory Reordering
+**Problem**: Manual check of stock levels across warehouses  
+**Solution**: Filter low stock → Group by supplier → Generate purchase orders
+
+## 🤝 Contributing
+
+Contributions welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-rule`)
+3. Commit changes (`git commit -m 'Add amazing rule'`)
+4. Push to branch (`git push origin feature/amazing-rule`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file
+
+## 🙋 Support
+
+- **Documentation**: [docs.macrobuilder.io](https://docs.macrobuilder.io) (coming soon)
+- **Issues**: [GitHub Issues](https://github.com/Medalcode/DataWeaver/issues)
+- **Repository**: [GitHub](https://github.com/Medalcode/DataWeaver)
 
 ---
 
-Si quieres el esquema completo, la especificación OpenAPI y otros artefactos, revisa las notas de diseño del producto en este repositorio.
+**Built with ❤️ for business users who deserve better than VBA**
