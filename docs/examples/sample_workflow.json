@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "type": "filter", "column": "Status", "operator": "=", "value": "OK" },
+    { "type": "group_sum", "group_by": "Category", "field": "Amount", "target_sheet": "category_sums" },
+    { "type": "move", "target_sheet": "final_output" }
+  ]
+}

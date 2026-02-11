@@ -353,6 +353,33 @@ dataweaver/
 - [ ] SDK desarrollo de reglas personalizadas
 - [ ] SSO empresarial
 
+## 📚 Documentación técnica
+
+Se han añadido documentos técnicos y esquemas para facilitar la extensión del motor de reglas:
+
+- `docs/agent.md`: Descripción del agente/orquestador (lifecycle, relación con Celery y la API).
+- `docs/skills.md`: Catálogo de skills (mapeadas a las reglas existentes) y guía "Cómo añadir un skill".
+- `docs/schemas/`: JSON Schema por tipo de skill (`filter`, `move`, `group_sum`).
+- `docs/examples/sample_workflow.json`: Ejemplo de workflow válido.
+- `tests/test_skills.py`: Plantilla de tests unitarios para skills. Los tests actuales pasan.
+
+Para ejecutar los tests locales asegúrate de añadir `backend` al `PYTHONPATH`:
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "backend"
+pytest -q
+```
+
+Linux / macOS:
+
+```bash
+export PYTHONPATH=backend
+pytest -q
+```
+
+
 ## 💼 Casos de Uso
 
 ### 1. Reportes Financieros Mensuales
