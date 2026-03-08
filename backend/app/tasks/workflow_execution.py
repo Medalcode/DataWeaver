@@ -5,8 +5,8 @@ import os
 
 from app.tasks import celery_app
 from app.engine.engine import engine
-from app.database import SessionLocal
-from app.models import Execution, ExecutionLog, WorkflowVersion, File as FileModel
+from app.core.database import SessionLocal
+from app.core.models import Execution, ExecutionLog, WorkflowVersion, File as FileModel
 
 
 @celery_app.task(name="execute_workflow")
@@ -60,7 +60,7 @@ def execute_workflow_task(execution_id: str, workflow_version_id: str, input_fil
             db.add(exec_log)
         
         # Save output files
-        from app.config import settings
+        from app.core.config import settings
         output_file_ids = []
         
         for sheet_name, output_df in result["outputs"].items():
@@ -85,7 +85,7 @@ def execute_workflow_task(execution_id: str, workflow_version_id: str, input_fil
             output_file_ids.append(str(output_file.id))
             
             # Link to execution
-            from app.models import ExecutionFile
+            from app.core.models import ExecutionFile
             exec_file = ExecutionFile(
                 execution_id=execution_id,
                 file_id=output_file.id,

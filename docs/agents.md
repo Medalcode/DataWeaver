@@ -31,25 +31,22 @@ PostgreSQL + File System
 
 ---
 
-## Agente Principal: `execute_workflow_task`
+## Agente Generalista: The Weaver (Orquestador)
 
 | Atributo           | Valor                                                                 |
 |--------------------|-----------------------------------------------------------------------|
 | **Nombre de tarea**| `execute_workflow`                                                    |
+| **Rol**            | **Orquestador Central** de Procesamiento                              |
 | **Módulo**         | `app.tasks.workflow_execution`                                        |
-| **Declaración**    | `@celery_app.task(name="execute_workflow")`                           |
-| **Cola por defecto**| `celery` (default Celery queue)                                      |
-| **Idempotente**    | No (cada invocación crea nuevos archivos de salida)                   |
+| **Versatilidad**   | Alta (Capaz de ejecutar cualquier lógica definida via Skills)          |
 
-### Responsabilidades
+### Responsabilidades y Densidad
 
-1. Marcar la ejecución como `running` en PostgreSQL.
-2. Cargar el archivo Excel de entrada desde el file system.
-3. Resolver la `WorkflowVersion` y sus reglas JSON.
-4. Invocar `engine.run(df, rules_json)`.
-5. Persistir los logs de ejecución paso a paso (`ExecutionLog`).
-6. Guardar cada hoja de salida como un archivo `.xlsx` y registrarlo en `File` + `ExecutionFile`.
-7. Marcar la ejecución como `success` o `failed` y registrar `finished_at`.
+Para evitar la fragmentación, este agente actúa como un **contexto de ejecución universal**. No se deben crear agentes adicionales para transformaciones específicas; en su lugar, se deben parametrizar las Skills que este agente consume.
+
+1. **Gestión de Estado**: Controla el ciclo `pending → running → success/failed`.
+2. **Abstracción de Datos**: Carga, valida y persiste archivos sin importar la complejidad de las reglas internas.
+3. **Dispatcher**: Inyecta el `ExecutionContext` en el motor de reglas de forma agnóstica.
 
 ---
 

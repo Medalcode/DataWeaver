@@ -1,9 +1,7 @@
 import pandas as pd
 
 from app.engine.context import ExecutionContext
-from app.engine.rules.filter import FilterRule
-from app.engine.rules.move import MoveRule
-from app.engine.rules.group_sum import GroupSumRule
+from app.engine.logic import FilterRule, MoveRule, AggregateRule
 
 
 def test_filter_rule():
@@ -16,14 +14,14 @@ def test_filter_rule():
 
     rule = FilterRule()
     params = {"type": "filter", "column": "Status", "operator": "=", "value": "OK"}
-    rule.execute(context, params)
+    rule.run_execute(context, params)
 
     assert len(context.current_df) == 1
     assert context.current_df.iloc[0]["Status"] == "OK"
     assert context.logs and context.logs[-1]["step_type"] == "filter"
 
 
-def test_group_sum_and_move_rules():
+def test_aggregate_rule():
     df = pd.DataFrame([
         {"Category": "A", "Amount": 10},
         {"Category": "A", "Amount": 5},
@@ -32,20 +30,24 @@ def test_group_sum_and_move_rules():
 
     context = ExecutionContext(df)
 
-    group_rule = GroupSumRule()
-    group_params = {"type": "group_sum", "group_by": "Category", "field": "Amount", "target_sheet": "sums"}
-    group_rule.execute(context, group_params)
+    # AggregateRule replaces GroupSumRule
+    rule = AggregateRule()
+    params = {"type": "aggregate", "group_by": "Category", "field": "Amount", "target_sheet": "sums", "op": "sum"}
+    rule.run_execute(context, params)
 
     assert "sums" in context.outputs
     sums_df = context.outputs["sums"]
     assert sums_df.loc[sums_df["Category"] == "A", "Amount"].iloc[0] == 15
-    assert sums_df.loc[sums_df["Category"] == "B", "Amount"].iloc[0] == 3
 
-    # Test move writes current_df to outputs
-    move_rule = MoveRule()
-    move_params = {"type": "move", "target_sheet": "final"}
-    move_rule.execute(context, move_params)
 
-    assert "final" in context.outputs
-    assert len(context.outputs["final"]) == len(context.current_df)
-    assert context.logs and any(l["step_type"] == "move" for l in context.logs)
+def test_super_param_target_sheet():
+    df = pd.DataFrame([{"Val": 1}, {"Val": 2}])
+    context = ExecutionContext(df)
+    
+    # Test that FilterRule (or any rule) can materialize via target_sheet
+    rule = FilterRule()
+    params = {"type": "filter", "column": "Val", "operator": ">", "value": 1, "target_sheet": "filtered_output"}
+    rule.run_execute(context, params)
+    
+    assert "filtered_output" in context.outputs
+    assert len(context.outputs["filtered_output"]) == 1

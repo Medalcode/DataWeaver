@@ -2,7 +2,7 @@ import pandas as pd
 from typing import Dict
 
 from app.engine.context import ExecutionContext
-from app.engine.rules.factory import get_rule
+from app.engine.logic import get_rule
 from app.engine.validator import validate_workflow
 
 
@@ -35,7 +35,8 @@ class RuleEngine:
             try:
                 rule_type = step["type"]
                 rule = get_rule(rule_type)
-                rule.execute(context, step)
+                # Use run_execute to trigger Super-Params like target_sheet
+                rule.run_execute(context, step)
             except Exception as e:
                 context.log(
                     "error",

@@ -98,80 +98,60 @@ La clave `type` es **obligatoria** y debe coincidir exactamente con la clave reg
 
 ---
 
-### 2. `move` — Exportar DataFrame Activo a una Hoja
-
-| Atributo        | Valor                                              |
-|-----------------|----------------------------------------------------|
-| **Clase**       | `MoveRule` (`app/engine/rules/move.py`)            |
-| **Registered as** | `"move"`                                         |
-| **Modifica**    | No modifica `context.current_df`                   |
-| **Escribe outputs** | `context.outputs[target_sheet]` = copia del DF |
-
-Copia el `current_df` en el momento de ejecución como una hoja nombrada en el resultado final. El DataFrame activo **no se vacía**; si se necesita aislar una hoja, usar `move` y luego aplicar más filtros.
-
-#### Parámetros
-
-| Parámetro      | Tipo   | Requerido | Descripción                               |
-|----------------|--------|-----------|-------------------------------------------|
-| `target_sheet` | string | ✅        | Nombre de la hoja en el archivo de salida |
-
-#### Ejemplo JSON
-
-```json
-{ "type": "move", "target_sheet": "Clientes_Activos" }
-```
-
-#### Convención de Nombres de Hojas
-
-- Usar `PascalCase` o `snake_case`, evitar espacios (Excel los permite pero dificultan el procesamiento posterior).
-- Nombres únicos por ejecución; si dos steps apuntan al mismo `target_sheet`, el segundo sobreescribe al primero.
-
-#### Errores Comunes
-
-| Mensaje                  | Causa                              |
-|--------------------------|------------------------------------|
-| `target_sheet is required` | Parámetro `target_sheet` ausente o vacío |
-
----
-
-### 3. `group_sum` — Agrupar y Sumar
+### 2. `aggregate` — Super-Skill de Agregación (Sustituye a group_sum)
 
 | Atributo        | Valor                                                       |
 |-----------------|-------------------------------------------------------------|
-| **Clase**       | `GroupSumRule` (`app/engine/rules/group_sum.py`)            |
-| **Registered as** | `"group_sum"`                                             |
+| **Clase**       | `AggregateRule` (`app/engine/rules/aggregate.py`)           |
+| **Registered as** | `"aggregate"`                                             |
 | **Modifica**    | No modifica `context.current_df`                            |
-| **Escribe outputs** | `context.outputs[target_sheet]` = DataFrame agrupado   |
+| **Escribe outputs** | `context.outputs[target_sheet]` = DF resumido             |
 
-Genera un DataFrame con dos columnas: la columna de agrupación (`group_by`) y la suma del campo numérico (`field`), y lo almacena como una hoja de salida.
+Esta "Super-Skill" consolida todas las operaciones de resumen. Soporta múltiples tipos de agregación mediante parámetros, eliminando la necesidad de skills específicos para 'sum', 'mean' o 'count'.
 
 #### Parámetros
 
 | Parámetro      | Tipo   | Requerido | Descripción                                      |
 |----------------|--------|-----------|--------------------------------------------------|
 | `group_by`     | string | ✅        | Columna por la que se agrupa                     |
-| `field`        | string | ✅        | Columna numérica que se suma                     |
-| `target_sheet` | string | ✅        | Nombre de la hoja de salida con el resultado     |
+| `field`        | string | ✅        | Columna sobre la que se aplica la métrica        |
+| `op`           | string | ❌        | Operación: `sum` (defecto), `mean`, `count`, `max`, `min` |
+| `target_sheet` | string | ✅        | Nombre de la hoja de salida                      |
 
 #### Ejemplo JSON
 
 ```json
 {
-  "type": "group_sum",
+  "type": "aggregate",
   "group_by": "Sucursal",
   "field": "Ventas",
-  "target_sheet": "Ventas_por_Sucursal"
+  "op": "mean",
+  "target_sheet": "Promedio_Ventas"
 }
 ```
 
-#### Errores Comunes
+---
 
-| Mensaje                                       | Causa                                              |
-|-----------------------------------------------|----------------------------------------------------|
-| `group_by, field, and target_sheet are required` | Uno o más parámetros ausentes                   |
-| `Column 'X' not found`                        | La columna `group_by` o `field` no existe en el DF |
+### 3. Parámetros Transversales (Super-Params)
+
+En lugar de skills tipo "wrapper" (como el antiguo `move`), hemos integrado lógica densa en los parámetros base que cualquier skill puede recibir:
+
+#### `target_sheet` (Global Materialization)
+Cualquier skill de transformación (como `filter`) puede recibir opcionalmente `target_sheet`. Si está presente, el resultado de ese paso se clonará automáticamente a una hoja de salida, haciendo obsoleta la skill `move`.
+
+**Ejemplo de uso denso (Filtra y exporta en un solo paso):**
+```json
+{ 
+  "type": "filter", 
+  "column": "Status", 
+  "operator": "=", 
+  "value": "Error",
+  "target_sheet": "Log_Errores" 
+}
+```
 
 ---
+
 
 ## JSON Schemas de Validación
 

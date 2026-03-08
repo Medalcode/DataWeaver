@@ -1,0 +1,121 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "DataWeaver Rules Definition",
+    "type": "object",
+    "properties": {
+        "steps": {
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/$defs/filter"
+                    },
+                    {
+                        "$ref": "#/$defs/aggregate"
+                    },
+                    {
+                        "$ref": "#/$defs/move"
+                    }
+                ]
+            }
+        }
+    },
+    "$defs": {
+        "common_params": {
+            "properties": {
+                "target_sheet": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Super-Param: Materializa el resultado en esta hoja"
+                }
+            }
+        },
+        "filter": {
+            "type": "object",
+            "required": [
+                "type",
+                "column",
+                "operator",
+                "value"
+            ],
+            "allOf": [
+                {
+                    "$ref": "#/$defs/common_params"
+                }
+            ],
+            "properties": {
+                "type": {
+                    "const": "filter"
+                },
+                "column": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string",
+                    "enum": [
+                        "=",
+                        "!=",
+                        ">",
+                        "<",
+                        ">=",
+                        "<=",
+                        "contains"
+                    ]
+                },
+                "value": {}
+            }
+        },
+        "aggregate": {
+            "type": "object",
+            "required": [
+                "type",
+                "group_by",
+                "field",
+                "target_sheet"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "aggregate",
+                        "group_sum"
+                    ]
+                },
+                "group_by": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "op": {
+                    "type": "string",
+                    "enum": [
+                        "sum",
+                        "mean",
+                        "count",
+                        "max",
+                        "min"
+                    ],
+                    "default": "sum"
+                },
+                "target_sheet": {
+                    "type": "string"
+                }
+            }
+        },
+        "move": {
+            "type": "object",
+            "required": [
+                "type",
+                "target_sheet"
+            ],
+            "properties": {
+                "type": {
+                    "const": "move"
+                },
+                "target_sheet": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

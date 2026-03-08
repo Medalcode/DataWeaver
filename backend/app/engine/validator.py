@@ -47,16 +47,16 @@ def validate_workflow(workflow: dict, df: pd.DataFrame):
             if "target_sheet" not in step:
                 raise WorkflowValidationError(f"Step {idx}: move requires 'target_sheet'")
         
-        # Validate group_sum rule
-        elif step_type == "group_sum":
+        # Validate aggregate (formerly group_sum)
+        elif step_type in ["aggregate", "group_sum"]:
             if "group_by" not in step:
-                raise WorkflowValidationError(f"Step {idx}: group_sum requires 'group_by'")
+                raise WorkflowValidationError(f"Step {idx}: aggregate requires 'group_by'")
             
             if "field" not in step:
-                raise WorkflowValidationError(f"Step {idx}: group_sum requires 'field'")
+                raise WorkflowValidationError(f"Step {idx}: aggregate requires 'field'")
             
             if "target_sheet" not in step:
-                raise WorkflowValidationError(f"Step {idx}: group_sum requires 'target_sheet'")
+                raise WorkflowValidationError(f"Step {idx}: aggregate requires 'target_sheet'")
             
             if step["group_by"] not in columns:
                 raise WorkflowValidationError(
@@ -67,3 +67,8 @@ def validate_workflow(workflow: dict, df: pd.DataFrame):
                 raise WorkflowValidationError(
                     f"Step {idx}: column '{step['field']}' does not exist"
                 )
+        
+        # Super-Param check: any rule can have target_sheet
+        if "target_sheet" in step and step_type not in ["aggregate", "group_sum", "move"]:
+            if not step["target_sheet"]:
+                raise WorkflowValidationError(f"Step {idx}: 'target_sheet' cannot be empty")
