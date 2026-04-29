@@ -1,17 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.core.database import Base, engine as db_engine
 from app.api import api_router
+from app.core.config import settings
+from app.core.database import Base
+from app.core.database import engine as db_engine
 
 # Create database tables
 Base.metadata.create_all(bind=db_engine)
 
 app = FastAPI(
-    title="DataWeaver API",
-    description="Low-code Excel automation platform",
-    version="1.0.0"
+    title="DataWeaver API", description="Low-code Excel automation platform", version="1.0.0"
 )
 
 # CORS middleware
@@ -22,6 +21,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Root & Health check
 @app.get("/")

@@ -1,14 +1,15 @@
 import pandas as pd
-
 from app.engine.context import ExecutionContext
-from app.engine.logic import FilterRule, MoveRule, AggregateRule
+from app.engine.logic import AggregateRule, FilterRule
 
 
 def test_filter_rule():
-    df = pd.DataFrame([
-        {"Status": "OK", "Amount": 10},
-        {"Status": "NO", "Amount": 5},
-    ])
+    df = pd.DataFrame(
+        [
+            {"Status": "OK", "Amount": 10},
+            {"Status": "NO", "Amount": 5},
+        ]
+    )
 
     context = ExecutionContext(df)
 
@@ -22,17 +23,25 @@ def test_filter_rule():
 
 
 def test_aggregate_rule():
-    df = pd.DataFrame([
-        {"Category": "A", "Amount": 10},
-        {"Category": "A", "Amount": 5},
-        {"Category": "B", "Amount": 3},
-    ])
+    df = pd.DataFrame(
+        [
+            {"Category": "A", "Amount": 10},
+            {"Category": "A", "Amount": 5},
+            {"Category": "B", "Amount": 3},
+        ]
+    )
 
     context = ExecutionContext(df)
 
     # AggregateRule replaces GroupSumRule
     rule = AggregateRule()
-    params = {"type": "aggregate", "group_by": "Category", "field": "Amount", "target_sheet": "sums", "op": "sum"}
+    params = {
+        "type": "aggregate",
+        "group_by": "Category",
+        "field": "Amount",
+        "target_sheet": "sums",
+        "op": "sum",
+    }
     rule.run_execute(context, params)
 
     assert "sums" in context.outputs
@@ -43,11 +52,17 @@ def test_aggregate_rule():
 def test_super_param_target_sheet():
     df = pd.DataFrame([{"Val": 1}, {"Val": 2}])
     context = ExecutionContext(df)
-    
+
     # Test that FilterRule (or any rule) can materialize via target_sheet
     rule = FilterRule()
-    params = {"type": "filter", "column": "Val", "operator": ">", "value": 1, "target_sheet": "filtered_output"}
+    params = {
+        "type": "filter",
+        "column": "Val",
+        "operator": ">",
+        "value": 1,
+        "target_sheet": "filtered_output",
+    }
     rule.run_execute(context, params)
-    
+
     assert "filtered_output" in context.outputs
     assert len(context.outputs["filtered_output"]) == 1
