@@ -43,7 +43,7 @@ graph TD
 | **Core** | `app/core/` | Auth, DB, Modelos y Esquemas (La Columna Vertebral) |
 | **Lógica** | `app/engine/logic.py` | Reglas Consolidadas y Super-Skills |
 | **Orquestador** | `app/engine/engine.py` | Gestión de Contexto y Ejecución de Pasos |
-| **Puerta de Enlace** | `app/api.py` | Endpoints REST Unificados |
+| **Puerta de Enlace** | `app/api/` | Endpoints REST Modulares |
 
 ---
 
@@ -70,6 +70,7 @@ docker-compose up -d postgres redis
 # 3. Iniciar Motores
 uvicorn app.main:app --reload
 celery -A app.tasks.celery_app worker --loglevel=info
+celery -A app.tasks.celery_app beat --loglevel=info
 ```
 
 ---

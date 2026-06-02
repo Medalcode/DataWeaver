@@ -1,6 +1,7 @@
 from celery import Celery
+from celery.schedules import crontab
 
-from app.config import settings
+from app.core.config import settings
 
 celery_app = Celery(
     "macrobuilder", broker=settings.CELERY_BROKER_URL, backend=settings.CELERY_RESULT_BACKEND
@@ -12,4 +13,12 @@ celery_app.conf.update(
     result_serializer="json",
     timezone="UTC",
     enable_utc=True,
+    imports=["app.tasks.workflow_execution", "app.tasks.maintenance"]
 )
+
+celery_app.conf.beat_schedule = {
+    "cleanup-expired-files-every-hour": {
+        "task": "cleanup_expired_files",
+        "schedule": crontab(minute=0),
+    },
+}

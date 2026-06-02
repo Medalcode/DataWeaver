@@ -43,7 +43,7 @@ graph TD
 | **Core** | `app/core/` | Auth, DB, Models & Schemas (The Backbone) |
 | **Logic** | `app/engine/logic.py` | Consolidated Rules & Super-Skills |
 | **Orchestrator** | `app/engine/engine.py` | Context Management & Step Execution |
-| **Gateway** | `app/api.py` | Unified REST Endpoints |
+| **Gateway** | `app/api/` | Modular REST Endpoints & Routers |
 
 ---
 
@@ -70,6 +70,7 @@ docker-compose up -d postgres redis
 # 3. Start Engines
 uvicorn app.main:app --reload
 celery -A app.tasks.celery_app worker --loglevel=info
+celery -A app.tasks.celery_app beat --loglevel=info
 ```
 
 ---
