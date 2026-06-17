@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
+    restart: always
     environment:
       POSTGRES_DB: macrobuilder
       POSTGRES_USER: postgres
@@ -11,14 +12,26 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
+    restart: always
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
+    restart: always
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
@@ -29,11 +42,14 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=your-secret-key-change-in-production
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   celery:
     build: .
+    restart: always
     command: celery -A app.tasks.celery_app worker --loglevel=info
     volumes:
       - ./backend:/app
@@ -41,11 +57,14 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/macrobuilder
       - REDIS_URL=redis://redis:6379/0
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   celery-beat:
     build: .
+    restart: always
     command: celery -A app.tasks.celery_app beat --loglevel=info
     volumes:
       - ./backend:/app
@@ -53,8 +72,10 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/macrobuilder
       - REDIS_URL=redis://redis:6379/0
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:

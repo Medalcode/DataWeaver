@@ -1,4 +1,5 @@
 import os
+from uuid import UUID
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -44,6 +45,11 @@ def create_execution(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Workflow version not found"
         )
+    if version.workflow.company_id != UUID(company_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Workflow version does not belong to your company",
+        )
     file = db.query(FileModel).filter(FileModel.id == execution_data.file_id, FileModel.company_id == company_id).first()
     if not file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
@@ -60,6 +66,24 @@ def create_execution(
         str(execution.id), str(execution_data.workflow_version_id), str(execution_data.file_id)
     )
     return execution
+
+
+@router.get("", response_model=list[ExecutionResponse])
+def list_executions(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    company_id: str = Depends(get_current_company_id),
+):
+    return (
+        db.query(Execution)
+        .filter(Execution.company_id == company_id)
+        .order_by(Execution.started_at.desc().nullslast())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 @router.get("/{execution_id}", response_model=ExecutionResponse)
@@ -116,10 +140,16 @@ async def get_execution_output(
     )
     if not exec_file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Output file not found")
-    file = db.query(FileModel).filter(FileModel.id == exec_file.file_id).first()
+    file = db.query(FileModel).filter(
+        FileModel.id == exec_file.file_id, FileModel.company_id == UUID(company_id)
+    ).first()
     if not file or not os.path.exists(file.storage_path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-    return FileResponse(path=file.storage_path, filename=file.original_filename)
+    return FileResponse(
+        path=file.storage_path,
+        filename=file.original_filename,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 @router.post("/preview", response_model=PreviewResponse)

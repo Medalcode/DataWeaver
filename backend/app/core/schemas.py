@@ -37,6 +37,12 @@ class WorkflowCreate(BaseModel):
     description: str | None = None
 
 
+class WorkflowUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    is_active: bool | None = None
+
+
 class WorkflowResponse(BaseModel):
     id: UUID
     name: str

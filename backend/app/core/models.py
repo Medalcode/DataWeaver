@@ -1,11 +1,28 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    CheckConstraint,
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from .database import Base
+
+
+def _utcnow():
+    return datetime.now(timezone.utc)
 
 
 class Company(Base):
@@ -13,10 +30,9 @@ class Company(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
-    plan = Column(String(50), default="free")  # free, pro, enterprise
-    created_at = Column(DateTime, default=datetime.utcnow)
+    plan = Column(String(50), default="free", server_default="free")
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
 
-    # Relationships
     users = relationship("Membership", back_populates="company")
     workflows = relationship("Workflow", back_populates="company")
 
@@ -27,10 +43,9 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(Text, nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True, server_default=func.true())
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
 
-    # Relationships
     memberships = relationship("Membership", back_populates="user")
 
 
@@ -38,9 +53,8 @@ class Role(Base):
     __tablename__ = "roles"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(50), unique=True, nullable=False)  # owner, admin, editor, runner, viewer
+    name = Column(String(50), unique=True, nullable=False)
 
-    # Relationships
     memberships = relationship("Membership", back_populates="role")
 
 
@@ -48,14 +62,23 @@ class Membership(Base):
     __tablename__ = "memberships"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    company_id = Column(
-        UUID(as_uuid=True), ForeignKey("companies.id", ondelete="CASCADE"), nullable=False
+    user_id = Column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    role_id = Column(UUID(as_uuid=True), ForeignKey("roles.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    company_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("companies.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    role_id = Column(
+        UUID(as_uuid=True), ForeignKey("roles.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
 
-    # Relationships
+    __table_args__ = (
+        UniqueConstraint("user_id", "company_id", name="uq_user_company"),
+    )
+
     user = relationship("User", back_populates="memberships")
     company = relationship("Company", back_populates="users")
     role = relationship("Role", back_populates="memberships")
@@ -73,11 +96,10 @@ class Workflow(Base):
     )
     name = Column(String(255), nullable=False)
     description = Column(Text)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_active = Column(Boolean, default=True, server_default=func.true())
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
+    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
 
-    # Relationships
     company = relationship("Company", back_populates="workflows")
     versions = relationship(
         "WorkflowVersion", back_populates="workflow", cascade="all, delete-orphan"
@@ -95,11 +117,18 @@ class WorkflowVersion(Base):
         index=True,
     )
     version_number = Column(Integer, nullable=False)
-    rules_json = Column(JSON, nullable=False)  # JSONB in PostgreSQL
-    created_at = Column(DateTime, default=datetime.utcnow)
-    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    rules_json = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
+    created_by = Column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
 
-    # Relationships
+    __table_args__ = (
+        UniqueConstraint(
+            "workflow_id", "version_number", name="uq_workflow_version"
+        ),
+    )
+
     workflow = relationship("Workflow", back_populates="versions")
     executions = relationship("Execution", back_populates="workflow_version")
 
@@ -115,14 +144,27 @@ class Execution(Base):
         index=True,
     )
     workflow_version_id = Column(
-        UUID(as_uuid=True), ForeignKey("workflow_versions.id"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("workflow_versions.id"),
+        nullable=False,
+        index=True,
     )
-    status = Column(String(50), default="pending")  # pending, running, success, failed
+    status = Column(
+        String(50),
+        default="pending",
+        server_default="pending",
+    )
     started_at = Column(DateTime)
     finished_at = Column(DateTime)
     error_message = Column(Text)
 
-    # Relationships
+    __table_args__ = (
+        CheckConstraint(
+            status.in_(["pending", "running", "success", "failed"]),
+            name="ck_execution_status",
+        ),
+    )
+
     workflow_version = relationship("WorkflowVersion", back_populates="executions")
     logs = relationship("ExecutionLog", back_populates="execution", cascade="all, delete-orphan")
     files = relationship("ExecutionFile", back_populates="execution")
@@ -142,9 +184,12 @@ class ExecutionLog(Base):
     step_type = Column(String(50), nullable=False)
     message = Column(Text, nullable=False)
     affected_rows = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
 
-    # Relationships
+    __table_args__ = (
+        Index("ix_execution_logs_exec_step", "execution_id", "step_index"),
+    )
+
     execution = relationship("Execution", back_populates="logs")
 
 
@@ -160,9 +205,15 @@ class File(Base):
     )
     original_filename = Column(String(255), nullable=False)
     storage_path = Column(Text, nullable=False)
-    file_type = Column(String(50), nullable=False)  # input, output
-    created_at = Column(DateTime, default=datetime.utcnow)
-    expires_at = Column(DateTime, nullable=False)
+    file_type = Column(String(50), nullable=False)
+    created_at = Column(DateTime, default=_utcnow, server_default=func.now())
+    expires_at = Column(DateTime, nullable=False, index=True)
+
+    __table_args__ = (
+        CheckConstraint(
+            file_type.in_(["input", "output"]), name="ck_file_type"
+        ),
+    )
 
 
 class ExecutionFile(Base):
@@ -174,7 +225,10 @@ class ExecutionFile(Base):
     file_id = Column(
         UUID(as_uuid=True), ForeignKey("files.id", ondelete="CASCADE"), primary_key=True
     )
-    role = Column(String(50), nullable=False)  # input, output
+    role = Column(String(50), nullable=False)
 
-    # Relationships
+    __table_args__ = (
+        CheckConstraint(role.in_(["input", "output"]), name="ck_exec_file_role"),
+    )
+
     execution = relationship("Execution", back_populates="files")

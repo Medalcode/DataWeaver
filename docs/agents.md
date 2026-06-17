@@ -169,39 +169,39 @@ execute_workflow_task.apply_async(args=[...], queue="heavy")
 
 ### Comportamiento Actual
 
-La implementación actual captura todas las excepciones en un bloque `try/except`, marca la ejecución como `failed` y almacena el mensaje de error en `execution.error_message`. **No realiza reintentos automáticos**.
-
-### Reintentos Automáticos (Recomendado para Producción)
-
-Para habilitar reintentos en errores transitorios (pérdida de conexión a DB, archivo temporalmente inaccesible):
+La tarea `execute_workflow_task` está configurada con reintentos automáticos. En errores transitorios se reintenta hasta 3 veces con un retardo de 60 segundos entre intentos. Los errores permanentes marcan la ejecución como `failed` sin reintentar.
 
 ```python
 @celery_app.task(
-    name="execute_workflow",
     bind=True,
     max_retries=3,
-    default_retry_delay=60,         # segundos entre reintentos
-    autoretry_for=(IOError, OSError),  # solo errores transitorios
+    default_retry_delay=60,
+    acks_late=True,
+    reject_on_worker_lost=True,
+    soft_time_limit=3600,
+    time_limit=3900,
 )
 def execute_workflow_task(self, execution_id, workflow_version_id, input_file_id):
-    try:
-        ...
-    except (IOError, OSError) as exc:
-        raise self.retry(exc=exc)
+    ...
     except Exception as e:
-        # Error permanente → marcar como failed, no reintentar
+        if self.request.retries < self.max_retries:
+            raise self.retry(exc=e)
         execution.status = "failed"
         ...
 ```
 
+| Configuración | Valor | Propósito |
+|---|---|---|
+| `max_retries=3` | 3 | Reintentos máximos antes de falla permanente |
+| `default_retry_delay=60` | 60s | Espera entre reintentos |
+| `acks_late=True` | — | No confirma el mensaje hasta que la tarea termina |
+| `reject_on_worker_lost=True` | — | Reencola si el worker falla inesperadamente |
+| `soft_time_limit=3600` | 1h | Tiempo máximo de ejecución (señal suave) |
+| `time_limit=3900` | 1h 5m | Tiempo máximo de ejecución (matar worker) |
+
 ### Dead Letter Queue
 
-Para tareas que agotan sus reintentos, configura una cola de mensajes muertos:
-
-```python
-# En Kombu / RabbitMQ se puede configurar con CELERY_TASK_REJECT_ON_WORKER_LOST = True
-# Para Redis como broker, mantener el seguimiento en execution.status = 'failed'
-```
+Los mensajes que agotan sus reintentos se marcan automáticamente como `failed` en la base de datos (`execution.status = 'failed'`) con el mensaje de error almacenado en `execution.error_message`. El worker rechaza el mensaje (`reject_on_worker_lost=True`) para que el broker pueda encolarlo en una DLQ si está configurada.
 
 ---
 

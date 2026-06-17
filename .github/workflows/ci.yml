@@ -2,11 +2,23 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - run: ruff check backend/app/ tests/
+      - run: mypy backend/app/ --ignore-missing-imports
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -18,5 +30,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-      - run: pip install -r requirements.txt 2>/dev/null || pip install pytest
-      - run: python -m pytest tests/ -v || echo "No tests found"
+      - run: pip install -r requirements.txt
+      - run: |
+          PYTHONPATH=backend python -m pytest tests/ -v --tb=short

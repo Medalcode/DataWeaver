@@ -44,6 +44,8 @@ graph TD
 | **Logic** | `app/engine/logic.py` | Consolidated Rules & Super-Skills |
 | **Orchestrator** | `app/engine/engine.py` | Context Management & Step Execution |
 | **Gateway** | `app/api/` | Modular REST Endpoints & Routers |
+| **Workers** | `app/tasks/` | Async Celery Tasks with Retry Logic |
+| **Migrations** | `alembic/` | Database Schema Migrations (Alembic) |
 
 ---
 
@@ -54,8 +56,11 @@ graph TD
 ```bash
 git clone https://github.com/Medalcode/DataWeaver.git
 cd DataWeaver
+cp .env.example .env
 docker-compose up -d
 ```
+
+Services include health checks and auto-restart on failure.
 
 ### Local Development
 
@@ -67,7 +72,10 @@ cp .env.example .env
 # 2. Start Infrastructure
 docker-compose up -d postgres redis
 
-# 3. Start Engines
+# 3. Run Database Migrations
+alembic upgrade head
+
+# 4. Start Engines
 uvicorn app.main:app --reload
 celery -A app.tasks.celery_app worker --loglevel=info
 celery -A app.tasks.celery_app beat --loglevel=info
@@ -94,15 +102,26 @@ Simple materialization wrapper for the current dataset.
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Linting
 
 We believe in bulletproof automation.
 
 ```bash
-# Set path and run suite
+# Set path and run tests
 $env:PYTHONPATH = "backend"
 pytest -v
+
+# Lint with ruff
+ruff check backend/
+
+# Type-check with mypy
+mypy backend/
+
+# Format code
+ruff format backend/
 ```
+
+CI automatically runs tests, ruff, and mypy on every push.
 
 ---
 

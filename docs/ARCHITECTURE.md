@@ -202,11 +202,26 @@ if resource.company_id != current_user.company_id:
 
 ### Database Optimization
 
+**Connection Pool**:
+- `DB_POOL_SIZE=10`, `DB_MAX_OVERFLOW=20` — controls concurrent database connections
+- `DB_POOL_PRE_PING=True` — validates connections before use
+- `expire_on_commit=False` — avoids unnecessary re-fetch after commit
+
 **Indexes**:
 - `workflows.company_id`
 - `executions.company_id`
 - `execution_logs.execution_id`
+- `execution_logs (execution_id, step_index)` — composite index for ordered log retrieval
+- `files.company_id`, `files.expires_at` — expiration-based cleanup
+- `workflow_versions.workflow_id`
 - `users.email`
+
+**Constraints**:
+- `UniqueConstraint("user_id", "company_id")` on `memberships` — one membership per user/company
+- `UniqueConstraint("workflow_id", "version_number")` on `workflow_versions`
+- `CheckConstraint` on `executions.status` — restricts to `pending`, `running`, `success`, `failed`
+- `CheckConstraint` on `files.file_type` — restricts to `input`, `output`
+- `CheckConstraint` on `execution_files.role` — restricts to `input`, `output`
 
 **Performance Queries**:
 - Always filter by `company_id` first

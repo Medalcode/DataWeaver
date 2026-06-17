@@ -7,6 +7,7 @@ from app.core.models import User, Workflow, WorkflowVersion
 from app.core.schemas import (
     WorkflowCreate,
     WorkflowResponse,
+    WorkflowUpdate,
     WorkflowVersionCreate,
     WorkflowVersionResponse,
 )
@@ -58,6 +59,39 @@ def get_workflow(
     if not workflow:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
     return workflow
+
+
+@router.put("/{workflow_id}", response_model=WorkflowResponse)
+def update_workflow(
+    workflow_id: str,
+    workflow_data: WorkflowUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    company_id: str = Depends(get_current_company_id),
+):
+    workflow = db.query(Workflow).filter(Workflow.id == workflow_id, Workflow.company_id == company_id).first()
+    if not workflow:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+    update_data = workflow_data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(workflow, key, value)
+    db.commit()
+    db.refresh(workflow)
+    return workflow
+
+
+@router.delete("/{workflow_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_workflow(
+    workflow_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    company_id: str = Depends(get_current_company_id),
+):
+    workflow = db.query(Workflow).filter(Workflow.id == workflow_id, Workflow.company_id == company_id).first()
+    if not workflow:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+    db.delete(workflow)
+    db.commit()
 
 
 @router.post(

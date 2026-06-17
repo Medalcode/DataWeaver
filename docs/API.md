@@ -31,6 +31,8 @@ Content-Type: application/json
 }
 ```
 
+**Password requirements**: minimum 8 characters, at least one uppercase letter, one lowercase letter, and one number.
+
 ### 2. Login
 ```http
 POST /auth/login
@@ -66,6 +68,27 @@ Content-Type: application/json
 GET /workflows
 Authorization: Bearer {token}
 ```
+
+### Update Workflow
+```http
+PUT /workflows/{workflow_id}
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "description": "Updated description",
+  "is_active": true
+}
+```
+All fields are optional — only provided fields are updated.
+
+### Delete Workflow
+```http
+DELETE /workflows/{workflow_id}
+Authorization: Bearer {token}
+```
+Returns `204 No Content`.
 
 ### Create Workflow Version
 ```http
@@ -136,6 +159,8 @@ Content-Type: multipart/form-data
 file=@path/to/file.xlsx
 ```
 
+Only `.xlsx` and `.xls` files are accepted (max 50MB).
+
 **Response**:
 ```json
 {
@@ -150,6 +175,13 @@ file=@path/to/file.xlsx
 GET /files/{file_id}/download
 Authorization: Bearer {token}
 ```
+
+### Delete File
+```http
+DELETE /files/{file_id}
+Authorization: Bearer {token}
+```
+Returns `204 No Content`.
 
 ## Executions
 
@@ -176,6 +208,13 @@ Content-Type: application/json
   "error_message": null
 }
 ```
+
+### List Executions
+```http
+GET /executions
+Authorization: Bearer {token}
+```
+Supports `?skip=0&limit=100` pagination. Returns executions ordered by most recent first.
 
 ### Get Execution Status
 ```http

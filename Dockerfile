@@ -17,7 +17,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application
 COPY backend/ ./
 
-# Create uploads directory
-RUN mkdir -p /app/uploads
+# Create uploads directory and set permissions
+RUN mkdir -p /app/uploads && \
+    addgroup --system --gid 1001 appuser && \
+    adduser --system --uid 1001 --ingroup appuser appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
