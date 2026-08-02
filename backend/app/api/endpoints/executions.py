@@ -3,10 +3,11 @@ from uuid import UUID
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user, get_current_company_id
+from app.core.auth import get_current_company_id, get_current_user
 from app.core.database import get_db
 from app.core.models import (
     Execution,
@@ -53,7 +54,7 @@ def create_execution(
     file = db.query(FileModel).filter(FileModel.id == execution_data.file_id, FileModel.company_id == company_id).first()
     if not file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-        
+
     execution = Execution(
         company_id=company_id,
         workflow_version_id=execution_data.workflow_version_id,
@@ -111,7 +112,7 @@ def get_execution_logs(
     execution = db.query(Execution).filter(Execution.id == execution_id, Execution.company_id == company_id).first()
     if not execution:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Execution not found")
-        
+
     return (
         db.query(ExecutionLog)
         .filter(ExecutionLog.execution_id == execution_id)
@@ -132,7 +133,7 @@ async def get_execution_output(
     execution = db.query(Execution).filter(Execution.id == execution_id, Execution.company_id == company_id).first()
     if not execution:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Execution not found")
-        
+
     exec_file = (
         db.query(ExecutionFile)
         .filter(ExecutionFile.execution_id == execution_id, ExecutionFile.role == "output")
@@ -162,5 +163,7 @@ async def preview_workflow(
     file = db.query(FileModel).filter(FileModel.id == preview_data.file_id, FileModel.company_id == company_id).first()
     if not file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-    df = pd.read_excel(file.storage_path)
+
+    # Non-blocking async threadpool execution for heavy synchronous Excel parsing
+    df = await run_in_threadpool(pd.read_excel, file.storage_path)
     return engine.preview(df, preview_data.rules, max_rows=20)

@@ -7,23 +7,20 @@ from uuid import uuid4
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi import File as FastAPIFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user, get_current_company_id
+from app.core.auth import get_current_company_id, get_current_user
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.models import User
 from app.core.models import File as FileModel
+from app.core.models import User
 from app.core.schemas import FileUploadResponse
 
 router = APIRouter(prefix="/files", tags=["Files"])
 
 ALLOWED_EXTENSIONS = {".xlsx", ".xls"}
-ALLOWED_MIME_PREFIXES = (
-    "application/vnd.openxmlformats-officedocument.spreadsheetml",
-    "application/vnd.ms-excel",
-)
 
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
@@ -55,7 +52,8 @@ async def upload_file(
     with open(storage_path, "wb") as buffer:
         shutil.copyfileobj(io.BytesIO(content), buffer)
 
-    df = pd.read_excel(storage_path)
+    # Non-blocking async threadpool execution for heavy synchronous Excel parsing
+    df = await run_in_threadpool(pd.read_excel, storage_path)
 
     file_record = FileModel(
         id=file_id,
