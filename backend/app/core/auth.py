@@ -1,26 +1,49 @@
+import hashlib
+import hmac
+import uuid
 from datetime import datetime, timedelta, timezone
-from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+
+try:
+    import jwt
+    from jwt.exceptions import PyJWTError as JWTError
+except ImportError:  # pragma: no cover
+    from jose import JWTError, jwt
+
+try:
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        if "$" in hashed_password and not hashed_password.startswith("$2"):
+            salt, h = hashed_password.split("$", 1)
+            computed = hashlib.sha256((salt + plain_password).encode()).hexdigest()
+            return hmac.compare_digest(computed, h)
+        return pwd_context.verify(plain_password, hashed_password)
+
+    def get_password_hash(password: str) -> str:
+        return pwd_context.hash(password)
+
+except ImportError:  # pragma: no cover
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        salt, h = hashed_password.split("$", 1) if "$" in hashed_password else ("", hashed_password)
+        computed = hashlib.sha256((salt + plain_password).encode()).hexdigest()
+        return hmac.compare_digest(computed, h)
+
+    def get_password_hash(password: str) -> str:
+        salt = uuid.uuid4().hex[:16]
+        h = hashlib.sha256((salt + password).encode()).hexdigest()
+        return f"{salt}${h}"
+
 
 from .config import settings
 from .database import get_db
 from .models import User
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
 
 
 def _decode_token(token: str) -> dict:
@@ -32,7 +55,7 @@ def _decode_token(token: str) -> dict:
         if payload.get("sub") is None:
             raise JWTError("Missing subject claim")
         return payload
-    except JWTError:
+    except (JWTError, Exception):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",

@@ -5,7 +5,7 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_DB: macrobuilder
+      POSTGRES_DB: dataweaver
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -35,12 +35,13 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
+      - uploads_data:/app/uploads
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/macrobuilder
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dataweaver
       - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=your-secret-key-change-in-production
+      - SECRET_KEY=change-this-secret-key-in-production
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,9 +54,11 @@ services:
     command: celery -A app.tasks.celery_app worker --loglevel=info
     volumes:
       - ./backend:/app
+      - uploads_data:/app/uploads
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/macrobuilder
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dataweaver
       - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=change-this-secret-key-in-production
     depends_on:
       postgres:
         condition: service_healthy
@@ -68,9 +71,11 @@ services:
     command: celery -A app.tasks.celery_app beat --loglevel=info
     volumes:
       - ./backend:/app
+      - uploads_data:/app/uploads
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/macrobuilder
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/dataweaver
       - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=change-this-secret-key-in-production
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,3 +84,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:

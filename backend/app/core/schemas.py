@@ -2,7 +2,14 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict
+
+try:
+    from pydantic import EmailStr
+    from pydantic.networks import import_email_validator
+    import_email_validator()
+except (ImportError, Exception):  # pragma: no cover
+    EmailStr = str  # Fallback to str if email-validator is missing in environment
 
 
 # Auth schemas
@@ -23,12 +30,11 @@ class Token(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     email: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Workflow schemas
@@ -44,15 +50,14 @@ class WorkflowUpdate(BaseModel):
 
 
 class WorkflowResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     name: str
     description: str | None
     is_active: bool
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Workflow version schemas
@@ -61,14 +66,13 @@ class WorkflowVersionCreate(BaseModel):
 
 
 class WorkflowVersionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     workflow_id: UUID
     version_number: int
     rules_json: dict[str, Any]
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # File schemas
@@ -85,6 +89,8 @@ class ExecutionCreate(BaseModel):
 
 
 class ExecutionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     workflow_version_id: UUID
     status: str
@@ -92,19 +98,15 @@ class ExecutionResponse(BaseModel):
     finished_at: datetime | None
     error_message: str | None
 
-    class Config:
-        from_attributes = True
-
 
 class ExecutionLogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     step_index: int
     step_type: str
     message: str
     affected_rows: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # Preview schema

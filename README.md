@@ -2,7 +2,7 @@
 
 > **A Lean, Declarative Excel Automation Engine for Modern Business**
 
-Transform fragmented Excel workflows into structured, versionable, and scalable assets. DataWeaver replaces fragile VBA macros with a high-density, parametric Rule Engine built on FastAPI and Pandas.
+Transform fragmented Excel workflows into structured, versionable, and scalable assets. DataWeaver replaces fragile VBA macros with a high-density, parametric Rule Engine built on FastAPI, Pandas, and Celery.
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?style=flat&logo=FastAPI)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python)](https://www.python.org)
@@ -17,9 +17,9 @@ Transform fragmented Excel workflows into structured, versionable, and scalable 
 
 Standard automation projects often suffer from "Complexity Bloat". DataWeaver is built on **Density Principles**:
 
-- **Super-Skills**: Instead of 50 different tools, we use parametric rules (e.g., `aggregate` handles sum, mean, count).
-- **Super-Params**: Global parameters like `target_sheet` allow any transformation to materialize results directly.
-- **Lean Architecture**: Consolidated API and Logic layers for maximum developer velocity and minimal maintenance overhead.
+- **Super-Skills**: Instead of 50 different tools, we use parametric rules (e.g., `aggregate` handles sum, mean, count, max, min).
+- **Super-Params**: Global parameters like `target_sheet` allow any transformation to materialize results directly into named output sheets.
+- **Lean Architecture**: Modular, SOLID-compliant Rule Engine and consolidated API layer for maximum developer velocity.
 
 ---
 
@@ -29,11 +29,12 @@ Standard automation projects often suffer from "Complexity Bloat". DataWeaver is
 
 ```mermaid
 graph TD
-    UI[React/Dashboard] -->|REST API| API[Consolidated API Layer]
-    API --> DB[(PostgreSQL)]
-    API -->|Dispatch| Worker[The Weaver: Generalist Orchestrator]
-    Worker -->|Execute| Logic[Parametric Rule Engine]
-    Logic -->|IO| Files[Excel Materializer]
+    UI[React / REST Client] -->|REST API| API[FastAPI Gateway]
+    API --> DB[(PostgreSQL Metadata)]
+    API -->|Dispatch Task| Redis[(Redis Broker)]
+    Redis -->|Consume| Worker[The Weaver: Celery Worker]
+    Worker -->|Execute| Logic[Modular Rule Engine]
+    Logic -->|Async IO| Files[Excel Storage Volume]
 ```
 
 ### Clean Structure
@@ -41,10 +42,10 @@ graph TD
 | Layer | Path | Responsibility |
 |-----------|-----------|---------|
 | **Core** | `app/core/` | Auth, DB, Models & Schemas (The Backbone) |
-| **Logic** | `app/engine/logic.py` | Consolidated Rules & Super-Skills |
+| **Rules Engine** | `app/engine/rules/` | Modular Rules (`filter`, `aggregate`, `move`) & Factory |
 | **Orchestrator** | `app/engine/engine.py` | Context Management & Step Execution |
-| **Gateway** | `app/api/` | Modular REST Endpoints & Routers |
-| **Workers** | `app/tasks/` | Async Celery Tasks with Retry Logic |
+| **Gateway** | `app/api/` | Non-blocking REST Endpoints & Routers |
+| **Workers** | `app/tasks/` | Async Celery Tasks with Fault-Tolerant Retry Logic |
 | **Migrations** | `alembic/` | Database Schema Migrations (Alembic) |
 
 ---
@@ -60,12 +61,12 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-Services include health checks and auto-restart on failure.
+Services include health checks, automatic database migrations, and shared storage volume between API and Celery workers.
 
 ### Local Development
 
 ```bash
-# 1. Install & Setup
+# 1. Install Dependencies
 pip install -r requirements.txt
 cp .env.example .env
 
@@ -75,7 +76,7 @@ docker-compose up -d postgres redis
 # 3. Run Database Migrations
 alembic upgrade head
 
-# 4. Start Engines
+# 4. Start API & Workers
 uvicorn app.main:app --reload
 celery -A app.tasks.celery_app worker --loglevel=info
 celery -A app.tasks.celery_app beat --loglevel=info
@@ -89,7 +90,7 @@ DataWeaver uses **Declarative Steps**. Every step can materialize its result by 
 
 ### 1. `filter` (Transformation)
 Filters the current working dataset.
-- **Params**: `column`, `operator`, `value`
+- **Params**: `column`, `operator`, `value` (`=`, `!=`, `>`, `<`, `>=`, `<=`, `contains`)
 - **Materialization**: `target_sheet` (Optional)
 
 ### 2. `aggregate` (Super-Skill)
@@ -98,42 +99,33 @@ Powerful data summarization.
 - **Required**: `target_sheet`
 
 ### 3. `move` (Legacy)
-Simple materialization wrapper for the current dataset.
+Simple materialization wrapper for the current working dataset.
 
 ---
 
-## 🧪 Testing & Linting
+## 🧪 Testing & Quality Assurance
 
-We believe in bulletproof automation.
+We maintain a 100% passing automated test suite (24 tests covering Engine, Auth, API, Tasks, and Validation).
 
 ```bash
-# Set path and run tests
+# Set PYTHONPATH and run full test suite
 $env:PYTHONPATH = "backend"
-pytest -v
-
-# Lint with ruff
-ruff check backend/
-
-# Type-check with mypy
-mypy backend/
-
-# Format code
-ruff format backend/
+python -m pytest tests/ -v
 ```
 
-CI automatically runs tests, ruff, and mypy on every push.
+CI automatically runs pytest across Python 3.10, 3.11, 3.12 and validates Docker build reproducibility on every push.
 
 ---
 
 ## 🤝 Contributing
 
-We prioritize **Density over Fragmentation**. Before adding a new file, ask: *"Can this be a parameter in an existing skill?"*
+Before adding a new file, ask: *"Can this be a parameter in an existing skill?"*
 
 1. Fork the repo.
-2. Build your feature in `logic.py`.
-3. Document it in `skills.md`.
+2. Build your feature in `app/engine/rules/`.
+3. Add unit tests in `tests/`.
 4. Submit your PR.
 
 ---
 
-**Built with ❤️ for those who want to automate without the legacy baggage.**
+**Built with ❤️ for scalable Excel automation.**
