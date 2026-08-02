@@ -1,6 +1,8 @@
 import pandas as pd
+import pytest
 from app.engine.context import ExecutionContext
-from app.engine.logic import AggregateRule, FilterRule
+from app.engine.logic import AggregateRule, FilterRule, MoveRule
+from app.engine.validator import WorkflowValidationError, validate_workflow
 
 
 def test_filter_rule():
@@ -66,3 +68,37 @@ def test_super_param_target_sheet():
 
     assert "filtered_output" in context.outputs
     assert len(context.outputs["filtered_output"]) == 1
+
+
+def test_move_rule():
+    df = pd.DataFrame([{"Val": 1}, {"Val": 2}])
+    context = ExecutionContext(df)
+
+    rule = MoveRule()
+    params = {"type": "move", "target_sheet": "moved_sheet"}
+    rule.run_execute(context, params)
+
+    assert "moved_sheet" in context.outputs
+    assert len(context.outputs["moved_sheet"]) == 2
+
+
+def test_polymorphic_validation_success():
+    df = pd.DataFrame({"Status": ["OK"], "Amount": [10]})
+    workflow = {
+        "steps": [
+            {"type": "filter", "column": "Status", "operator": "=", "value": "OK"},
+            {"type": "aggregate", "group_by": "Status", "field": "Amount", "target_sheet": "summary"},
+        ]
+    }
+    validate_workflow(workflow, df)  # should not raise
+
+
+def test_polymorphic_validation_missing_column():
+    df = pd.DataFrame({"Status": ["OK"]})
+    workflow = {
+        "steps": [
+            {"type": "filter", "column": "NonExistent", "operator": "=", "value": "OK"},
+        ]
+    }
+    with pytest.raises(WorkflowValidationError, match="column 'NonExistent' does not exist"):
+        validate_workflow(workflow, df)
