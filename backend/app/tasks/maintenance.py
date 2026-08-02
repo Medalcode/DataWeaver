@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.core.database import SessionLocal
 from app.core.models import File as FileModel
@@ -14,7 +14,8 @@ def cleanup_expired_files_task():
     """
     db = SessionLocal()
     try:
-        expired_files = db.query(FileModel).filter(FileModel.expires_at < datetime.utcnow()).all()
+        now_utc = datetime.now(timezone.utc)
+        expired_files = db.query(FileModel).filter(FileModel.expires_at < now_utc).all()
         for file in expired_files:
             if os.path.exists(file.storage_path):
                 os.remove(file.storage_path)

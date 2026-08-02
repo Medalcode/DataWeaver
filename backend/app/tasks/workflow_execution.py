@@ -3,12 +3,27 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
+try:
+    from celery.exceptions import Retry
+except (ImportError, ModuleNotFoundError):  # pragma: no cover
+    class Retry(Exception):
+        pass
+
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.core.models import Execution, ExecutionFile, ExecutionLog, WorkflowVersion
 from app.core.models import File as FileModel
 from app.engine.engine import engine
+from app.engine.validator import WorkflowValidationError
 from app.tasks import celery_app
+
+# Exceptions that should fail immediately without wasting worker retries
+NON_RETRYABLE_EXCEPTIONS = (
+    WorkflowValidationError,
+    ValueError,
+    FileNotFoundError,
+    KeyError,
+)
 
 
 @celery_app.task(
@@ -27,7 +42,7 @@ def execute_workflow_task(self, execution_id: str, workflow_version_id: str, inp
     try:
         execution = db.query(Execution).filter(Execution.id == execution_id).first()
         if not execution:
-            raise Exception(f"Execution {execution_id} not found")
+            raise FileNotFoundError(f"Execution {execution_id} not found")
 
         execution.status = "running"
         execution.started_at = datetime.now(timezone.utc)
@@ -39,11 +54,14 @@ def execute_workflow_task(self, execution_id: str, workflow_version_id: str, inp
             .first()
         )
         if not version:
-            raise Exception(f"Workflow version {workflow_version_id} not found")
+            raise FileNotFoundError(f"Workflow version {workflow_version_id} not found")
 
         input_file = db.query(FileModel).filter(FileModel.id == input_file_id).first()
         if not input_file:
-            raise Exception(f"Input file {input_file_id} not found")
+            raise FileNotFoundError(f"Input file {input_file_id} not found")
+
+        if not os.path.exists(input_file.storage_path):
+            raise FileNotFoundError(f"Physical file missing at {input_file.storage_path}")
 
         df = pd.read_excel(input_file.storage_path)
         result = engine.run(df, version.rules_json)
@@ -87,15 +105,29 @@ def execute_workflow_task(self, execution_id: str, workflow_version_id: str, inp
 
         return {"status": "success", "output_files": output_file_ids}
 
+    except Retry:
+        # Re-raise Celery's internal Retry exception without marking execution as failed
+        raise
+
     except Exception as e:
-        execution.status = "failed"
-        execution.finished_at = datetime.now(timezone.utc)
-        execution.error_message = str(e)
-        db.commit()
-        try:
-            self.retry(exc=e)
-        except Exception:
-            raise
+        db.rollback()
+        is_non_retryable = isinstance(e, NON_RETRYABLE_EXCEPTIONS)
+        retries = getattr(getattr(self, "request", None), "retries", 0)
+        max_retries = getattr(self, "max_retries", 3)
+        is_max_retries = retries >= max_retries
+
+        if is_non_retryable or is_max_retries:
+            execution = db.query(Execution).filter(Execution.id == execution_id).first()
+            if execution:
+                execution.status = "failed"
+                execution.finished_at = datetime.now(timezone.utc)
+                execution.error_message = str(e)
+                db.commit()
+            raise e
+        else:
+            if hasattr(self, "retry"):
+                raise self.retry(exc=e)
+            raise e
 
     finally:
         db.close()
