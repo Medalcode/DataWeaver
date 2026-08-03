@@ -1,0 +1,1979 @@
+{
+  "metadata": {
+    "project": "DataWeaver",
+    "version": "1.1.0",
+    "total_nodes": 91,
+    "total_edges": 190,
+    "layers": [
+      "engine",
+      "tasks",
+      "main.py",
+      "api",
+      "__init__.py",
+      "core"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "app.main",
+      "label": "main.py",
+      "kind": "module",
+      "layer": "main.py",
+      "details": {
+        "file_path": "main.py"
+      }
+    },
+    {
+      "id": "app.main.health",
+      "label": "health",
+      "kind": "endpoint",
+      "layer": "main.py",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "__init__.py",
+      "details": {
+        "file_path": "__init__.py"
+      }
+    },
+    {
+      "id": "app.api.router",
+      "label": "router.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\router.py"
+      }
+    },
+    {
+      "id": "app.api.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\__init__.py"
+      }
+    },
+    {
+      "id": "app.core.auth",
+      "label": "auth.py",
+      "kind": "module",
+      "layer": "core",
+      "details": {
+        "file_path": "core\\auth.py"
+      }
+    },
+    {
+      "id": "app.core.auth._decode_token",
+      "label": "_decode_token",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.auth.create_access_token",
+      "label": "create_access_token",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.auth.get_current_user",
+      "label": "get_current_user",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.auth.get_current_company_id",
+      "label": "get_current_company_id",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.config",
+      "label": "config.py",
+      "kind": "module",
+      "layer": "core",
+      "details": {
+        "file_path": "core\\config.py"
+      }
+    },
+    {
+      "id": "app.core.config.Settings",
+      "label": "Settings",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.database",
+      "label": "database.py",
+      "kind": "module",
+      "layer": "core",
+      "details": {
+        "file_path": "core\\database.py"
+      }
+    },
+    {
+      "id": "app.core.database.get_db",
+      "label": "get_db",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.models",
+      "label": "models.py",
+      "kind": "module",
+      "layer": "core",
+      "details": {
+        "file_path": "core\\models.py"
+      }
+    },
+    {
+      "id": "app.core.models._utcnow",
+      "label": "_utcnow",
+      "kind": "function",
+      "layer": "core",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.core.models.Company",
+      "label": "Company",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.User",
+      "label": "User",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.Role",
+      "label": "Role",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.Membership",
+      "label": "Membership",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.Workflow",
+      "label": "Workflow",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.WorkflowVersion",
+      "label": "WorkflowVersion",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.Execution",
+      "label": "Execution",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.ExecutionLog",
+      "label": "ExecutionLog",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.File",
+      "label": "File",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.models.ExecutionFile",
+      "label": "ExecutionFile",
+      "kind": "model",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas",
+      "label": "schemas.py",
+      "kind": "module",
+      "layer": "core",
+      "details": {
+        "file_path": "core\\schemas.py"
+      }
+    },
+    {
+      "id": "app.core.schemas.UserLogin",
+      "label": "UserLogin",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.UserRegister",
+      "label": "UserRegister",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.Token",
+      "label": "Token",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.UserResponse",
+      "label": "UserResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.WorkflowCreate",
+      "label": "WorkflowCreate",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.WorkflowUpdate",
+      "label": "WorkflowUpdate",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.WorkflowResponse",
+      "label": "WorkflowResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.WorkflowVersionCreate",
+      "label": "WorkflowVersionCreate",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.WorkflowVersionResponse",
+      "label": "WorkflowVersionResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.FileUploadResponse",
+      "label": "FileUploadResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.ExecutionCreate",
+      "label": "ExecutionCreate",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.ExecutionResponse",
+      "label": "ExecutionResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.ExecutionLogResponse",
+      "label": "ExecutionLogResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.PreviewRequest",
+      "label": "PreviewRequest",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.core.schemas.PreviewResponse",
+      "label": "PreviewResponse",
+      "kind": "class",
+      "layer": "core",
+      "details": {
+        "docstring": ""
+      }
+    },
+    {
+      "id": "app.engine.context",
+      "label": "context.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\context.py"
+      }
+    },
+    {
+      "id": "app.engine.context.ExecutionContext",
+      "label": "ExecutionContext",
+      "kind": "class",
+      "layer": "engine",
+      "details": {
+        "docstring": "Maintains state during workflow execution"
+      }
+    },
+    {
+      "id": "app.engine.engine",
+      "label": "engine.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\engine.py"
+      }
+    },
+    {
+      "id": "app.engine.engine.RuleEngine",
+      "label": "RuleEngine",
+      "kind": "class",
+      "layer": "engine",
+      "details": {
+        "docstring": "Main orchestrator for workflow execution"
+      }
+    },
+    {
+      "id": "app.engine.logic",
+      "label": "logic.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\logic.py"
+      }
+    },
+    {
+      "id": "app.engine.validator",
+      "label": "validator.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\validator.py"
+      }
+    },
+    {
+      "id": "app.engine.validator.WorkflowValidationError",
+      "label": "WorkflowValidationError",
+      "kind": "class",
+      "layer": "engine",
+      "details": {
+        "docstring": "Raised when workflow validation fails."
+      }
+    },
+    {
+      "id": "app.engine.validator.validate_workflow",
+      "label": "validate_workflow",
+      "kind": "function",
+      "layer": "engine",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.engine.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\__init__.py"
+      }
+    },
+    {
+      "id": "app.tasks.maintenance",
+      "label": "maintenance.py",
+      "kind": "module",
+      "layer": "tasks",
+      "details": {
+        "file_path": "tasks\\maintenance.py"
+      }
+    },
+    {
+      "id": "app.tasks.maintenance.cleanup_expired_files_task",
+      "label": "cleanup_expired_files_task",
+      "kind": "task",
+      "layer": "tasks",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.tasks.workflow_execution",
+      "label": "workflow_execution.py",
+      "kind": "module",
+      "layer": "tasks",
+      "details": {
+        "file_path": "tasks\\workflow_execution.py"
+      }
+    },
+    {
+      "id": "app.tasks.workflow_execution.execute_workflow_task",
+      "label": "execute_workflow_task",
+      "kind": "task",
+      "layer": "tasks",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.tasks.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "tasks",
+      "details": {
+        "file_path": "tasks\\__init__.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.aggregate",
+      "label": "aggregate.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\aggregate.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.aggregate.AggregateRule",
+      "label": "AggregateRule",
+      "kind": "rule",
+      "layer": "engine",
+      "details": {
+        "docstring": "Super-Skill: Resumen interactivo (sum, mean, count, max, min)."
+      }
+    },
+    {
+      "id": "app.engine.rules.base",
+      "label": "base.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\base.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.base.Rule",
+      "label": "Rule",
+      "kind": "class",
+      "layer": "engine",
+      "details": {
+        "docstring": "Base class for all workflow rules with automatic materialization and validation support."
+      }
+    },
+    {
+      "id": "app.engine.rules.factory",
+      "label": "factory.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\factory.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.factory.get_rule",
+      "label": "get_rule",
+      "kind": "function",
+      "layer": "engine",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.engine.rules.filter",
+      "label": "filter.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\filter.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.filter.FilterRule",
+      "label": "FilterRule",
+      "kind": "rule",
+      "layer": "engine",
+      "details": {
+        "docstring": "Filter rows based on column conditions."
+      }
+    },
+    {
+      "id": "app.engine.rules.move",
+      "label": "move.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\move.py"
+      }
+    },
+    {
+      "id": "app.engine.rules.move.MoveRule",
+      "label": "MoveRule",
+      "kind": "rule",
+      "layer": "engine",
+      "details": {
+        "docstring": "Legacy wrapper for simple move, now mostly handled by Super-Param target_sheet."
+      }
+    },
+    {
+      "id": "app.engine.rules.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "engine",
+      "details": {
+        "file_path": "engine\\rules\\__init__.py"
+      }
+    },
+    {
+      "id": "app.api.endpoints.auth",
+      "label": "auth.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\endpoints\\auth.py"
+      }
+    },
+    {
+      "id": "app.api.endpoints.auth._validate_password_strength",
+      "label": "_validate_password_strength",
+      "kind": "function",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.auth.register",
+      "label": "register",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.auth.login",
+      "label": "login",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions",
+      "label": "executions.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\endpoints\\executions.py"
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.create_execution",
+      "label": "create_execution",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.list_executions",
+      "label": "list_executions",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.get_execution",
+      "label": "get_execution",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.get_execution_logs",
+      "label": "get_execution_logs",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.get_execution_output",
+      "label": "get_execution_output",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": true
+      }
+    },
+    {
+      "id": "app.api.endpoints.executions.preview_workflow",
+      "label": "preview_workflow",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": true
+      }
+    },
+    {
+      "id": "app.api.endpoints.files",
+      "label": "files.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\endpoints\\files.py"
+      }
+    },
+    {
+      "id": "app.api.endpoints.files.upload_file",
+      "label": "upload_file",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": true
+      }
+    },
+    {
+      "id": "app.api.endpoints.files.download_file",
+      "label": "download_file",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": true
+      }
+    },
+    {
+      "id": "app.api.endpoints.files.delete_file",
+      "label": "delete_file",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows",
+      "label": "workflows.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\endpoints\\workflows.py"
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.create_workflow",
+      "label": "create_workflow",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.list_workflows",
+      "label": "list_workflows",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.get_workflow",
+      "label": "get_workflow",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.update_workflow",
+      "label": "update_workflow",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.delete_workflow",
+      "label": "delete_workflow",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.create_workflow_version",
+      "label": "create_workflow_version",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.workflows.list_workflow_versions",
+      "label": "list_workflow_versions",
+      "kind": "endpoint",
+      "layer": "api",
+      "details": {
+        "is_async": false
+      }
+    },
+    {
+      "id": "app.api.endpoints.__init__",
+      "label": "__init__.py",
+      "kind": "module",
+      "layer": "api",
+      "details": {
+        "file_path": "api\\endpoints\\__init__.py"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "app.main",
+      "target": "app.main.health",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.auth",
+      "target": "app.core.auth._decode_token",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.auth",
+      "target": "app.core.auth.create_access_token",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.auth",
+      "target": "app.core.auth.get_current_user",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.auth",
+      "target": "app.core.auth.get_current_company_id",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.config",
+      "target": "app.core.config.Settings",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.database",
+      "target": "app.core.database.get_db",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models._utcnow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.Company",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.User",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.Role",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.Membership",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.Workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.WorkflowVersion",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.Execution",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.ExecutionLog",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.File",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.models",
+      "target": "app.core.models.ExecutionFile",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.UserLogin",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.UserRegister",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.Token",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.UserResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.WorkflowCreate",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.WorkflowUpdate",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.WorkflowResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.WorkflowVersionCreate",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.WorkflowVersionResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.FileUploadResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.ExecutionCreate",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.ExecutionResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.ExecutionLogResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.PreviewRequest",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.core.schemas",
+      "target": "app.core.schemas.PreviewResponse",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.context",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.engine.RuleEngine",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.validator",
+      "target": "app.engine.validator.WorkflowValidationError",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.validator",
+      "target": "app.engine.validator.validate_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.maintenance",
+      "target": "app.tasks.maintenance.cleanup_expired_files_task",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.tasks.workflow_execution.execute_workflow_task",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.aggregate",
+      "target": "app.engine.rules.aggregate.AggregateRule",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.base",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.factory.get_rule",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.filter",
+      "target": "app.engine.rules.filter.FilterRule",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.move",
+      "target": "app.engine.rules.move.MoveRule",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.api.endpoints.auth._validate_password_strength",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.api.endpoints.auth.register",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.api.endpoints.auth.login",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.create_execution",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.list_executions",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.get_execution",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.get_execution_logs",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.get_execution_output",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.api.endpoints.executions.preview_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.api.endpoints.files.upload_file",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.api.endpoints.files.download_file",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.api.endpoints.files.delete_file",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.create_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.list_workflows",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.get_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.update_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.delete_workflow",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.create_workflow_version",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.api.endpoints.workflows.list_workflow_versions",
+      "relation": "CONTAINS",
+      "details": {}
+    },
+    {
+      "source": "app.main",
+      "target": "app.api.router",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.main",
+      "target": "app.core.config",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.main",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.main",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.router",
+      "target": "app.api.endpoints.auth",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.router",
+      "target": "app.api.endpoints.executions",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.router",
+      "target": "app.api.endpoints.files",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.router",
+      "target": "app.api.endpoints.workflows",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.context",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.logic",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.validator",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.engine",
+      "target": "app.engine.validator.validate_workflow",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.validator",
+      "target": "app.engine.rules.factory",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.validator",
+      "target": "app.engine.rules.factory.get_rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.maintenance",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.maintenance",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.maintenance",
+      "target": "app.core.models.File",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.config",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models.Execution",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models.ExecutionFile",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models.ExecutionLog",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models.WorkflowVersion",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.core.models.File",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.engine.engine",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.engine.validator",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.workflow_execution",
+      "target": "app.engine.validator.WorkflowValidationError",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.tasks.__init__",
+      "target": "app.core.config",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.aggregate",
+      "target": "app.engine.context",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.aggregate",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.aggregate",
+      "target": "app.engine.rules.base",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.aggregate",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.base",
+      "target": "app.engine.context",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.base",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.aggregate",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.aggregate.AggregateRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.base",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.filter",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.filter.FilterRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.move",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.factory",
+      "target": "app.engine.rules.move.MoveRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.filter",
+      "target": "app.engine.context",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.filter",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.filter",
+      "target": "app.engine.rules.base",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.filter",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.move",
+      "target": "app.engine.context",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.move",
+      "target": "app.engine.context.ExecutionContext",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.move",
+      "target": "app.engine.rules.base",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.move",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.aggregate",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.aggregate.AggregateRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.base",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.base.Rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.factory",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.factory.get_rule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.filter",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.filter.FilterRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.move",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.engine.rules.__init__",
+      "target": "app.engine.rules.move.MoveRule",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.auth",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.auth.create_access_token",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.database.get_db",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.models.Company",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.models.Membership",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.models.Role",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.models.User",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.schemas",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.schemas.Token",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.schemas.UserRegister",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.auth",
+      "target": "app.core.schemas.UserResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.auth",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.auth.get_current_company_id",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.auth.get_current_user",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.database.get_db",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.Execution",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.ExecutionFile",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.ExecutionLog",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.User",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.WorkflowVersion",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.models.File",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas.ExecutionCreate",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas.ExecutionLogResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas.ExecutionResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas.PreviewRequest",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.core.schemas.PreviewResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.engine.engine",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.tasks.workflow_execution",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.tasks.workflow_execution.execute_workflow_task",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.tasks.maintenance.cleanup_expired_files_task",
+      "relation": "DISPATCHES_TASK",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.executions",
+      "target": "app.tasks.workflow_execution.execute_workflow_task",
+      "relation": "DISPATCHES_TASK",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.auth",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.auth.get_current_company_id",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.auth.get_current_user",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.config",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.database.get_db",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.models.File",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.models.User",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.schemas",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.files",
+      "target": "app.core.schemas.FileUploadResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.auth",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.auth.get_current_user",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.auth.get_current_company_id",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.database",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.database.get_db",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.models",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.models.User",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.models.Workflow",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.models.WorkflowVersion",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas",
+      "relation": "IMPORTS",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas.WorkflowCreate",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas.WorkflowResponse",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas.WorkflowUpdate",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas.WorkflowVersionCreate",
+      "relation": "USES",
+      "details": {}
+    },
+    {
+      "source": "app.api.endpoints.workflows",
+      "target": "app.core.schemas.WorkflowVersionResponse",
+      "relation": "USES",
+      "details": {}
+    }
+  ]
+}
